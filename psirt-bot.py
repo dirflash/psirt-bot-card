@@ -12,7 +12,7 @@ from datetime import datetime, date, timedelta, timezone
 import os
 import sys
 import json
-from time import time, sleep
+from time import time
 import requests
 import certifi
 from pymongo import MongoClient
@@ -32,7 +32,7 @@ KEY = "CI"
 if os.getenv(KEY):
     mongoaddr = "cluster0.jzvod.mongodb.net"
     mongodb = "PSIRT"
-    mongocollect = "card"
+    mongocollect = "request"
     mongouser = os.environ["mongouser"]
     mongopw = os.environ["mongopw"]
     webex_bearer = os.environ["webex_bearer"]
@@ -64,7 +64,7 @@ Mongo_Client = MongoClient(
 
 db = Mongo_Client[mongodb]
 collection = db[mongocollect]
-card_counter = db["card_counter"]
+card_counter = db["counter"]
 
 wa_post_msg_url = "https://webexapis.com/v1/messages"
 wa_token = f"Bearer {webex_bearer}"
