@@ -9,7 +9,7 @@ jobs:
     name: Run psirt-bot.py
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    environment: psirt_bot_enviro_1
+    environment: psirt_bot_card_env
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
