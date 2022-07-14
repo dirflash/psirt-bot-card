@@ -22,4 +22,4 @@ This XLXS file will make it easier for a security team to review updated PSIRT i
 
 ## Bot Workflow
 
-![PSQRT-Flow](https://user-images.githubusercontent.com/10964629/179073560-b026f68b-cfd2-4239-b2de-6a6120941909.JPG)
+![PSQRT-Flow](https://user-images.githubusercontent.com/10964629/179073560-b026f68b-cfd2-4239-b2de-6a6120941909.JPG){ width="800" height="600" style="display: block; margin: 0 auto" }
