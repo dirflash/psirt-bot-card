@@ -12,6 +12,12 @@
 
 ---
 
+# Getting Started
+
+1. [Problem Statement] (#what-problem-is-this-script-trying-to-solve)
+
+2. [Workflow Diagram] (#bot-workflow)
+
 ## What problem is this script trying to solve?
 
 Using the [Cisco Security Advisories portal](https://tools.cisco.com/security/center/publicationListing.x), it can be difficult to determine what PSIRT notifications have been updated with new information, affected products, workarounds, and patches.
