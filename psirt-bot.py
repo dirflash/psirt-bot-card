@@ -72,6 +72,7 @@ wa_headers = {"Authorization": wa_token, "Content-Type": "application/json"}
 wa_msg_body = "Adaptive card response. Open message on a supported client to respond."
 
 
+pre_record_ids = []
 record_ids = []
 TOTAL_CHANGED = 0
 VALID_COUNT = 0
@@ -223,6 +224,77 @@ def recent_update(verify_cve_date):
     return recent
 
 
+def rapid_test(fun_record_ids):
+    """Some times multiple requests are received resulting in more than one reply.
+    The function will filter out requests made within a 10-second window, suppressing multiple
+    replies.
+
+    Args:
+        fun_record_ids (int): record_ids to be checked
+
+    Returns:
+        int: filtered list of record_ids to respond to.
+    """
+    logging.info("Before rapid request filter: %s", fun_record_ids)
+
+    dup_check = []
+    for count, value in enumerate(fun_record_ids):
+        fun_record_id = {"_id": value}
+        dup_collect = collection.find_one(fun_record_id)
+        created = dup_collect["createdAt"]
+        email = dup_collect["User_Id"]
+        dup_check.append(
+            {"fun_record_id": fun_record_id, "msg_created": created, "email": email}
+        )
+
+    len_dup_chk = len(dup_check)
+
+    for _ in reversed(range(len_dup_chk)):
+        logging.info("Duplicate primary check index: %s", _)
+        source_dup_check = dup_check[_]["fun_record_id"]["_id"]
+        source_e_compare = dup_check[_]["email"]
+        source_m_compare = dup_check[_]["msg_created"]
+        if isinstance(source_m_compare, str):
+            update_created(source_dup_check, source_m_compare)
+        source_lookup = collection.find_one(fun_record_id)
+        source_m_converted = source_lookup["createdAt"]
+        sec_dup_check = _ - 1
+        logging.info("Duplicate compare check index: %s", sec_dup_check)
+        if sec_dup_check >= 0:
+            secondary_dup_check = dup_check[sec_dup_check]["fun_record_id"]["_id"]
+            sec_e_compare = dup_check[sec_dup_check]["email"]
+            sec_m_compare = dup_check[sec_dup_check]["msg_created"]
+            if isinstance(sec_m_compare, str):
+                update_created(secondary_dup_check, sec_m_compare)
+            sec_lookup = collection.find_one(fun_record_id)
+            sec_m_converted = sec_lookup["createdAt"]
+            if source_e_compare == sec_e_compare:
+                logging.info("Duplicate email address found.")
+                record_delta = source_m_converted - sec_m_converted
+                logging.info("Compare messages record delta: %s", record_delta)
+                if record_delta < timedelta(seconds=10):
+                    print("within threshold - not a good message")
+                    logging.info("Duplicate message sent less than 10 seconds.")
+                    tagged_msg_id = fun_record_ids[_]
+                    logging.info("Tag msg id  %s as duplicate.", tagged_msg_id)
+                    try:
+                        dup_msg_id = fun_record_ids[_]
+                        collection.update_one(
+                            {"_id": dup_msg_id},
+                            {"$set": {"response": "duplicate"}},
+                        )
+                        fun_record_ids.pop(_)
+                    except ConnectionFailure as update_err:
+                        logging.exception(update_err)
+                else:
+                    print("exceeded threshold - send good message")
+
+    # end rapid request filter
+
+    logging.info("Deduped message ids: %s", fun_record_ids)
+    return fun_record_ids
+
+
 logging.info("------------------------------------------------------")
 
 # Get PSIRT OAUTH
@@ -292,11 +364,16 @@ logging.info("Number of records to check for validity: %s", num_records)
 for record in new_record:
     ID = record.get("_id")
     record_id = {"_id": ID}
-    record_ids.append(ID)
+    pre_record_ids.append(ID)
+
+record_ids = rapid_test(pre_record_ids)
+num_records = collection.count_documents({"response": {"$exists": False}})
+logging.info("Number of records to check post rapid test: %s", num_records)
 
 # pylint: disable=pointless-string-statement
 """Convert each Mongo 'createdAt' String record to Date object.
-This allows the creation of a MongoDB index rule that can clean up records older than a set number of seconds.
+This allows the creation of a MongoDB index rule that can clean up records older than a set
+number of seconds.
 """
 for _ in range(num_records):
     record_index = record_ids[_]
