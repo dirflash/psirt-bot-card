@@ -14,9 +14,9 @@
 
 # Getting Started
 
-1.  ![Problem Statement] (#what-problem-is-this-script-trying-to-solve)
+1.  [Problem Statement](#what-problem-is-this-script-trying-to-solve)
 
-2.  ![Workflow Diagram] (#bot-workflow)
+2.  [Workflow Diagram](#bot-workflow)
 
 ## What problem is this script trying to solve?
 
