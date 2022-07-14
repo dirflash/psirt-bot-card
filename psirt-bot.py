@@ -301,41 +301,48 @@ This allows the creation of a MongoDB index rule that can clean up records older
 for _ in range(num_records):
     record_index = record_ids[_]
     up_record = collection.find_one({"_id": record_index})
-    respond = collection.find({"_id": record_index}, {"response": {"$exists": False}})
-    date_str = up_record["createdAt"]
-    if isinstance(date_str, str):
-        update_created(record_index, date_str)
-    # if response exists, skip this record
-    if bool(respond) is True:
-        # bot check
-        if up_record["First_Name"] == "bot":
-            logging.exception(up_record)
-            logging.exception("It's a bot!")
-            try:
-                collection.update_one(
-                    {"_id": record_index}, {"$set": {"user_type": "Bot"}}
-                )
-            except KeyError:
+    msg_sent = collection.find(
+        {"_id": record_index}, {"msg_sent_status": {"$exists": False}}
+    )
+    if bool(msg_sent) is True:  # If a msg has already been sent, skip the next steps
+        respond = collection.find(
+            {"_id": record_index}, {"response": {"$exists": False}}
+        )
+        date_str = up_record["createdAt"]
+        if isinstance(date_str, str):
+            update_created(record_index, date_str)
+        # if response exists, skip this record
+        if bool(respond) is True:
+            # bot check
+            if up_record["First_Name"] == "bot":
+                logging.exception(up_record)
+                logging.exception("It's a bot!")
                 try:
-                    invalid_object_id.append(record_index)
                     collection.update_one(
-                        {"_id": record_index}, {"$set": {"msg": "malformed_msg"}}
+                        {"_id": record_index}, {"$set": {"user_type": "Bot"}}
                     )
-                    collection.update_one(
-                        {"_id": record_index}, {"$set": {"response": "unknown_request"}}
-                    )
-                except ConnectionFailure as key_err:
-                    logging.error(key_err)
-            invalid_object_id.append(record_index)
-            INVALID_COUNT += 1
-            TOTAL_CHANGED += 1
-        else:
-            collection.update_one(
-                {"_id": record_index}, {"$set": {"user_type": "User"}}
-            )
-            valid_object_id.append(record_index)
-            VALID_COUNT += 1
-            TOTAL_CHANGED += 1
+                except KeyError:
+                    try:
+                        invalid_object_id.append(record_index)
+                        collection.update_one(
+                            {"_id": record_index}, {"$set": {"msg": "malformed_msg"}}
+                        )
+                        collection.update_one(
+                            {"_id": record_index},
+                            {"$set": {"response": "unknown_request"}},
+                        )
+                    except ConnectionFailure as key_err:
+                        logging.error(key_err)
+                invalid_object_id.append(record_index)
+                INVALID_COUNT += 1
+                TOTAL_CHANGED += 1
+            else:
+                collection.update_one(
+                    {"_id": record_index}, {"$set": {"user_type": "User"}}
+                )
+                valid_object_id.append(record_index)
+                VALID_COUNT += 1
+                TOTAL_CHANGED += 1
 
 # Respond to valid requests
 for _ in valid_object_id:
