@@ -33,6 +33,8 @@ jobs:
           webex_bearer: ${{ secrets.WEBEX_BEARER }}
           psirt_client_id: ${{ secrets.PSIRT_CLIENT_ID }}
           psirt_client_secret: ${{ secrets.PSIRT_CLIENT_SECRET }}
-          gsheet_doc_link: ${{secrets.GSHEET_DOC_LINK}}
+          gsheet_doc_link_7: ${{secrets.GSHEET_DOC_LINK_7}}
+          gsheet_doc_link_14: ${{secrets.GSHEET_DOC_LINK_14}}
+          gsheet_doc_link_30: ${{secrets.GSHEET_DOC_LINK_30}}
         run: |
           python psirt-bot.py

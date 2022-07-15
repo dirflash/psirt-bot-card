@@ -39,7 +39,9 @@ if os.getenv(KEY):
     psirt_grant = "client_credentials"
     psirt_client_id = os.environ["psirt_client_id"]
     psirt_client_secret = os.environ["psirt_client_secret"]
-    gsheet_doc_link = os.environ["gsheet_doc_link"]
+    gsheet_doc_link_7 = os.environ["gsheet_doc_link_7"]
+    gsheet_doc_link_14 = os.environ["gsheet_doc_link_14"]
+    gsheet_doc_link_30 = os.environ["gsheet_doc_link_30"]
 else:
     config = configparser.ConfigParser()
     config.read("config.ini")
@@ -52,7 +54,9 @@ else:
     psirt_grant = config["PSIRT"]["grant_type"]
     psirt_client_id = config["PSIRT"]["client_id"]
     psirt_client_secret = config["PSIRT"]["client_secret"]
-    gsheet_doc_link = config["GSHEETS"]["doc_link"]
+    gsheet_doc_link_7 = config["GSHEETS"]["doc_link_7"]
+    gsheet_doc_link_14 = config["GSHEETS"]["doc_link_14"]
+    gsheet_doc_link_30 = config["GSHEETS"]["doc_link_30"]
 
 MAX_MONGODB_DELAY = 500
 
@@ -109,7 +113,8 @@ def get_rm_rpt(entry_id):
     lookup_record = collection.find_one({"_id": entry_id})
     reply_room = lookup_record["Room_Id"]
     report_format = lookup_record["Report_Type"]
-    return reply_room, report_format
+    report_time = lookup_record["Report_Time"]
+    return reply_room, report_format, report_time
 
 
 def card_build(cve_count, cve_recent, x):
@@ -424,12 +429,23 @@ for _ in range(num_records):
 # Respond to valid requests
 for _ in valid_object_id:
     # Get room ID & Report Type
-    reply_room_Id, report_type = get_rm_rpt(_)
-    report_days = 7
+    reply_room_Id, report_type, report_days = get_rm_rpt(_)
     wa_card_attach = card_build(CVE_ENTRY_COUNT, CVE_UPDATED_ENTRIES, report_days)
-    attach_url = (
-        f"https://docs.google.com/spreadsheets/d/e/{gsheet_doc_link}/pub?output="
-    )
+    if report_days == "7":
+        attach_url = (
+            f"https://docs.google.com/spreadsheets/d/e/{gsheet_doc_link_7}/pub?output="
+        )
+        logging.info("7-day URL")
+    if report_days == "14":
+        attach_url = (
+            f"https://docs.google.com/spreadsheets/d/e/{gsheet_doc_link_14}/pub?output="
+        )
+        logging.info("14-day URL")
+    if report_days == "30":
+        attach_url = (
+            f"https://docs.google.com/spreadsheets/d/e/{gsheet_doc_link_30}/pub?output="
+        )
+        logging.info("30-day URL")
 
     wa_post_payload = json.dumps(
         {
