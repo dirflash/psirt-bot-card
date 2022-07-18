@@ -16,9 +16,12 @@
 
 1.  [Problem Statement](#what-problem-is-this-script-trying-to-solve)
 2.  [Requirements](#requirements-for-running-in-autonomous-bot-mode)
-3.  [Pipedream Setup](#pipedream)
-4.  [Cisco API Console Registration](#cisco-api-console-registration)
-5.  [Workflow Diagram](#bot-workflow)
+3.  [Webex](#webex)
+4.  [Webex Webhook](#webex-webhook)
+5.  [Pipedream Setup](#pipedream)
+6.  [Cisco API Console Registration](#cisco-api-console-registration)
+7.  [Workflow Diagram](#bot-workflow)
+8.  [References](#references)
 
 ## What problem is this script trying to solve?
 
@@ -41,6 +44,21 @@ Registered accounts with the following services:
 
 Running separately, and concurrently, is [psirt-gsheets](https://github.com/dirflash/psirt-gsheets). This script creates a Google Sheets document with the updated Cisco PSIRTs. The PSIRT Bot uses the Google Sheets publish to the web functionality to attach the latest report to the Webex app response.
 
+### Webex
+
+1.  Create an account at https://www.webex.com.
+2.  Create a [new Bot app](https://developer.webex.com/my-apps/new).
+    - Record the following details:
+    - Bot access token
+    - Bot username
+    - Bot ID
+
+### Webex Webhook
+
+Using the Webex for Developers documentation, create a "messages" -> "created" and "attachmentActions" -> "created" Webhook.
+The target URL in the Webhook configuration is the [Pipedream Webhook receiver URL](#w_r_URL).
+![Sample Webhook](https://user-images.githubusercontent.com/10964629/179615236-5dc6b4bd-4116-420e-8b53-a6444ad2c397.png)
+
 ### Pipedream
 
 1. Create a Pipedream.com account
@@ -60,6 +78,7 @@ Running separately, and concurrently, is [psirt-gsheets](https://github.com/dirf
    - Select "HTTP/Webhook"
    - Select "HTTP Requests"
    - Click "Save and Continue"
+     <a name="w_r_URL"></a>
    - Safely record and store the Webhook receiver URL
 
 ![trigger_1](https://user-images.githubusercontent.com/10964629/178046780-1e054c26-3769-48ab-bed9-430a1fbc9308.jpg)
@@ -151,3 +170,7 @@ Save the "Key" and "Client Secret" in a secure place. These credentials will nee
 <p align="center">
   <img width="921" height="1344" src="https://user-images.githubusercontent.com/10964629/179082986-db417a65-17f7-4862-8d55-7b4a1ed7fd46.JPG">
 </p>
+
+## References
+
+1.  [Webex Developer Platform Documentation](https://developer.webex.com/docs/platform-introduction)
