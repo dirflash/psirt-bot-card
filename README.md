@@ -14,11 +14,11 @@
 
 # Getting Started
 
-1.  [Problem Statement](#ps)
+1.  [Problem Statement](#what-problem-is-this-script-trying-to-solve)
 2.  [Requirements](#requirements-for-running-in-autonomous-bot-mode)
-3.  [Workflow Diagram](#workflow)
-
-<a name="ps"></a>
+3.  [Pipedream Setup](#pipedream)
+4.  [Cisco API Console Registration](#cisco-api-console-registration)
+5.  [Workflow Diagram](#bot-workflow)
 
 ## What problem is this script trying to solve?
 
@@ -40,6 +40,109 @@ Registered accounts with the following services:
 5.  Github - https://github.com
 
 Running separately, and concurrently, is [psirt-gsheets](https://github.com/dirflash/psirt-gsheets). This script creates a Google Sheets document with the updated Cisco PSIRTs. The PSIRT Bot uses the Google Sheets publish to the web functionality to attach the latest report to the Webex app response.
+
+### Pipedream
+
+1. Create a Pipedream.com account
+2. Click on "Settings"
+3. Click on "Environment Variables"
+4. Click on "NEW ENVIRONMENT VARIABLE"
+5. Create the following Environment Variables
+   - "Bearer" - Webex App Bearer Token
+   - "git_action" - Github Action Token
+   - "psirt_otoken_client_id" - Obtained in the ["Cisco API Console Registration"](https://github.com/dirflash/psirt-bot#cisco-api-console-registration) section
+   - "psirt_otoken_client_secret" - Obtained in the ["Cisco API Console Registration"](https://github.com/dirflash/psirt-bot#cisco-api-console-registration) section
+
+![enviro_vars](https://user-images.githubusercontent.com/10964629/178057241-fbd9a22a-e0aa-4abd-99d8-4710e8b4fd53.JPG)
+
+6. Create a new Workflow
+7. Add a trigger
+   - Select "HTTP/Webhook"
+   - Select "HTTP Requests"
+   - Click "Save and Continue"
+   - Safely record and store the Webhook receiver URL
+
+![trigger_1](https://user-images.githubusercontent.com/10964629/178046780-1e054c26-3769-48ab-bed9-430a1fbc9308.jpg)
+
+8. Click on the plus sign underneath the trigger step
+9. Add a Python step
+10. Select "Run Python Code"
+11. Name the step "get_user"
+12. Add the code included in the following image
+
+![trigger_2](https://user-images.githubusercontent.com/10964629/178047393-451db592-30ed-410a-86e5-7a36e56a2b0a.JPG)
+
+13. Click on the plus sign underneath the "get_user" step
+14. In the "Search for an app" field, type "filter"
+15. Select "Filter"
+16. Select "End Workflow on Custom Condition"
+17. Click on the "Reason" box and expand the "steps" data
+18. Select "First_Name"
+19. Complete the "Reason" logic to look like the following image
+
+![trigger_3](https://user-images.githubusercontent.com/10964629/178048441-3c0edc97-e0f2-4019-889c-a4ae7719839b.JPG)
+**Note: To be able to find the required fields, a test messages must have been sent to the Pipedream receiver by following the instructions in the "Webex" section above.**
+
+20. Follow the same steps to complete the "Condition" logic
+21. Click on the plus sign underneath the trigger step
+22. Add a Python step
+23. Select "Run Python Code"
+24. Name the step "get_msg"
+25. Add the code included in the following image
+
+![trigger_4](https://user-images.githubusercontent.com/10964629/178049252-84ece278-32ab-4acf-895b-5ec8f09037f6.JPG)
+
+26. Go back to the main Pipedream dashboard and select "Accounts"
+27. Click "CONNECT AN APP"
+28. In the "Search for an App" box, type "Mongo"
+29. Select "MongoDB"
+30. Complete the required account information and validate Pipedream can connect to your MongoDB database
+31. Click on the plus sign underneath the "get_msg" step
+32. In the "Search for an app" field, type "mongo"
+33. Select "MongoDB"
+34. Select "Use any MongoDB API"
+35. Complete the "MongoDB Account", "Database", "Collection" fields to connect MongoDB
+36. Add the "Data" objects and expressions to match the following image
+37. Name the step "create_new_document"
+
+![trigger_5](https://user-images.githubusercontent.com/10964629/178050220-3db52bf3-568d-40b0-b100-2be1bf5f9b10.JPG)
+
+38. Click on the plus sign underneath the trigger step
+39. Add a Python step
+40. Select "Run Python Code"
+41. Name the step "Github_Action"
+42. Add the code included in the following image
+
+![trigger_6](https://user-images.githubusercontent.com/10964629/178051934-ef0afb7b-d095-4574-ad8c-7fce78bc9775.JPG)
+
+43. Click on the plus sign underneath the trigger step
+44. Add a Python step
+45. Select "Run Python Code"
+46. Name the step "python" - or anything else you like. Since it's the last step, the name is not important.
+47. Add the code included in the following image
+
+![trigger_7](https://user-images.githubusercontent.com/10964629/178052334-a8127e32-ed7b-45e6-b6a9-fa99904cf8d8.JPG)
+
+48. You will need to test each step of the workflow to validate it works correctly
+49. Once all steps are validated, click on the "Deploy" button in the top right
+50. You will be taken to the "inspect" console that shows a summary of each step and a log of each Webhook request
+
+### Cisco API Console Registration
+
+An account will also need to be created to access the [Cisco API Console](https://apiconsole.cisco.com/).
+
+1. Once logged into the Cisco API Console, click on "My Keys & Apps"
+   ![My Keys & Apps](https://github.com/dirflash/psirt-7-day/blob/master/images/keys_apps.JPG)
+
+2. Click on "Register a New Apps
+3. Give your application a name
+4. Provide an optional description of the application
+5. Select "Client Credentials" in the "OAuth2.0 Credentials" section
+6. Select the "Cisco PSIRT openVuln API" check box
+7. Agree to the "Terms of Service"
+8. Click on "Register"
+
+Save the "Key" and "Client Secret" in a secure place. These credentials will need to be added as Github secrets for the Github action to work properly.
 
 <a name="workflow"></a>
 
