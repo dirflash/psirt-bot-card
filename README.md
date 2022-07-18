@@ -18,10 +18,11 @@
 2.  [Requirements](#requirements-for-running-in-autonomous-bot-mode)
 3.  [Webex](#webex)
 4.  [Webex Webhook](#webex-webhook)
-5.  [Pipedream Setup](#pipedream)
-6.  [Cisco API Console Registration](#cisco-api-console-registration)
-7.  [Workflow Diagram](#bot-workflow)
-8.  [References](#references)
+5.  [Send a Webex test message](#webex-test-message)
+6.  [Pipedream Setup](#pipedream)
+7.  [Cisco API Console Registration](#cisco-api-console-registration)
+8.  [Workflow Diagram](#bot-workflow)
+9.  [References](#references)
 
 ## What problem is this script trying to solve?
 
@@ -57,7 +58,14 @@ Running separately, and concurrently, is [psirt-gsheets](https://github.com/dirf
 
 Using the Webex for Developers documentation, create a "messages" -> "created" and "attachmentActions" -> "created" Webhook.
 The target URL in the Webhook configuration is the [Pipedream Webhook receiver URL](#w_r_URL).
+
 ![Sample Webhook](https://user-images.githubusercontent.com/10964629/179615236-5dc6b4bd-4116-420e-8b53-a6444ad2c397.png)
+
+## Webex Test Message
+
+From the Webex app, send a test message to the newly created Webex Bot. This message should appear in the "Select Event" section of the HTTP?Webhook "Trigger" event in Pipedream.
+
+![Test Message](https://user-images.githubusercontent.com/10964629/179617300-46af75dc-e36f-4552-b7b5-6468918e9b9e.png)
 
 ### Pipedream
 
