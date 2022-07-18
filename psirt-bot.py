@@ -211,7 +211,7 @@ def psirt_otoken(psirt_f_grant, psirt_f_client_id, psirt_f_client_secret):
     return (otoken_access_token, otoken_token_type, otoken_token_dies)
 
 
-def recent_update(verify_cve_date):
+def recent_update(verify_cve_date, reported_days):
     """Determines if CVE entry has been updated in last 7 days
 
     Args:
@@ -224,7 +224,7 @@ def recent_update(verify_cve_date):
     stripped_date = verify_cve_date[:t_index:]
     split_date = tuple(stripped_date.split("-"))
     new_date = date(int(split_date[0]), int(split_date[1]), int(split_date[2]))
-    seven_days = date.today() - timedelta(days=7)
+    seven_days = date.today() - timedelta(days=reported_days)
     recent = seven_days < new_date
     return recent
 
@@ -338,28 +338,9 @@ except requests.HTTPError:
     sys.exit(1)
 
 psirt_json_response = json.loads(psirt_response.text)
-
-# End of PSIRT request
-
-# Get number of CVE's > 90-days and those updated in last 7-days
-
 cve_entries = psirt_json_response["advisories"]
 
-CVE_ENTRY_COUNT = 1
-CVE_UPDATED_ENTRIES = 0
-
-for entry in cve_entries:
-    last_updated = entry["lastUpdated"]
-    fresh_update = recent_update(last_updated)
-    if fresh_update is True:
-        CVE_UPDATED_ENTRIES += 1
-
-    CVE_ENTRY_COUNT += 1
-
-logging.info("Total number of CVE entries: %s", CVE_ENTRY_COUNT)
-logging.info("Number of updated CVE entries: %s", CVE_UPDATED_ENTRIES)
-
-# End of conversion
+# End of PSIRT request
 
 new_record = collection.find({"response": {"$exists": False}})
 num_records = collection.count_documents({"response": {"$exists": False}})
@@ -426,10 +407,35 @@ for _ in range(num_records):
                 VALID_COUNT += 1
                 TOTAL_CHANGED += 1
 
+
 # Respond to valid requests
 for _ in valid_object_id:
     # Get room ID & Report Type
     reply_room_Id, report_type, report_days = get_rm_rpt(_)
+
+    # Get number of CVE's > 90-days and those updated in last {report_days}-days
+    CVE_ENTRY_COUNT = 1
+    CVE_UPDATED_ENTRIES = 0
+
+    for entry in cve_entries:
+        last_updated = entry["lastUpdated"]
+        fresh_update = recent_update(
+            last_updated, int(report_days)
+        )  # function call to get CVE's in {report_days}
+        if fresh_update is True:
+            CVE_UPDATED_ENTRIES += 1
+
+        CVE_ENTRY_COUNT += 1
+
+    logging.info("Total number of CVE entries: %s", CVE_ENTRY_COUNT)
+    logging.info(
+        "Number of updated CVE entries in last %s days: %s",
+        report_days,
+        CVE_UPDATED_ENTRIES,
+    )
+
+    # End of conversion
+
     wa_card_attach = card_build(CVE_ENTRY_COUNT, CVE_UPDATED_ENTRIES, report_days)
     if report_days == "7":
         attach_url = (
