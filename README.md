@@ -222,6 +222,16 @@ Example conversation in the Webex App:
 
 YouTube ![Walk Through](https://youtu.be/4AVw72WgZ5A) video from a user perspective.
 
+<iframe
+    width="640"
+    height="480"
+    src="https://www.youtube.com/embed/4AVw72WgZ5A"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen
+>
+</iframe>
+
 ## Bot Workflow
 
 <p align="center">
