@@ -222,7 +222,7 @@ Example conversation in the Webex App:
 
 YouTube walk through video from a user perspective.
 
-[![walk through](https://img.youtube.com/vi/4AVw72WgZ5A/default.jpg)](https://youtu.com/watch?v=4AVw72WgZ5A)
+[![walk through](https://img.youtube.com/vi/4AVw72WgZ5A/default.jpg)](https://www.youtube.com/watch?v=4AVw72WgZ5A)
 
 ## Bot Workflow
 
