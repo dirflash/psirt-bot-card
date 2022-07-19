@@ -220,7 +220,7 @@ Example conversation in the Webex App:
 
 ## Usage Walk Through
 
-YouTube ![walk through](https://youtu.com/watch?v=4AVw72WgZ5A) video from a user perspective.
+YouTube ![walk through](https://youtu.com/vi/4AVw72WgZ5A/0.jpg) video from a user perspective.
 
 ## Bot Workflow
 
