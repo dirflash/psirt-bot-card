@@ -226,8 +226,6 @@ YouTube walk through video from a user perspective.
  <img src="http://img.youtube.com/vi/4AVw72WgZ5A/mqdefault.jpg" alt="Watch the video" width="720" height="405" border="10" />
 </a>
 
-[![walk through](https://img.youtube.com/vi/4AVw72WgZ5A/default.jpg)](https://www.youtube.com/watch?v=4AVw72WgZ5A&target=_blank)
-
 ## Bot Workflow
 
 <p align="center">
