@@ -21,8 +21,9 @@
 5.  [Send a Webex test message](#webex-test-message)
 6.  [Pipedream Setup](#pipedream)
 7.  [Cisco API Console Registration](#cisco-api-console-registration)
-8.  [Workflow Diagram](#bot-workflow)
-9.  [References](#references)
+8.  [PSQRT Walk Through](#usage-walk-through)
+9.  [Workflow Diagram](#bot-workflow)
+10. [References](#references)
 
 ## What problem is this script trying to solve?
 
@@ -171,7 +172,55 @@ An account will also need to be created to access the [Cisco API Console](https:
 
 Save the "Key" and "Client Secret" in a secure place. These credentials will need to be added as Github secrets for the Github action to work properly.
 
-<a name="workflow"></a>
+### MongoDB
+
+### Github
+
+## Run and test locally
+
+## Requirements to run and test locally
+
+This script requires a Python environment and the libraries included in the [requirements.txt](https://github.com/dirflash/psirt-bot-card/blob/master/requirements.txt) file.
+
+Import requirements file: `pip install -r requirements.txt`
+
+### Configparser to store and access secrets
+
+All the API keys are stored in a config.ini file using [configparser](https://docs.python.org/3/library/configparser.html). Your config.ini file should look like this:
+
+![Sample config.ini file](https://user-images.githubusercontent.com/10964629/179619962-6a2d545b-6e6b-42d7-9d01-cb9722ac1fa0.png)
+
+### Cisco API Console Credentials
+
+Follow the instructions in the "Cisco API Console Registration section"
+
+The generated "Key" and "Client Secret" should be used as the client_id and client_secret objects in psirt.py.
+
+## Usage
+
+```
+$  python.exe psirt-bot.py
+```
+
+[psirt-bot.py](https://github.com/dirflash/psirt-bot-card/blob/master/psirt-bot.py) is the main script.
+
+It retrieves a calls OAuth Bearer access token, collects the number of active PSIRT listings and the number of PSIRTs that have been updated in the last 7-days.
+
+It then collects Webex App user information stored in the MongoDB instance, and responds to the requester with a report of the PSIRTs that have been updated in the last 7-day, 14-days, or 30-days based on the selection related to the first adaptive card.
+
+If the script is run locally, a CSV file of the report is also generated an placed in the 'reports' folder.
+
+Example conversation in the Webex App:
+
+![conversation](https://user-images.githubusercontent.com/10964629/178044418-a0995e1f-4037-4e31-90ab-b2cc1878302a.JPG)
+
+### Sample report
+
+![sample_report](https://user-images.githubusercontent.com/10964629/178044999-5f1b6ce7-7001-4962-a068-1189d87c4e9a.JPG)
+
+## Usage Walk Through
+
+![Walk Through](https://youtu.be/4AVw72WgZ5A)
 
 ## Bot Workflow
 
