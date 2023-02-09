@@ -12,11 +12,11 @@ jobs:
     environment: psirt_bot_card_env
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: setup python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.10.0
+          python-version: 3.10.10
       - name: setup cache
         uses: actions/cache@v3
         with:
